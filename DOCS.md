@@ -109,8 +109,8 @@ The dashboard clears the screen using ANSI escape codes and prints a simple tabl
 
 #  4. Conclusions and Learnings 
 
-Team Member 1:
+Carlos Gouyonnet:
 I learned that choosing the right data structures makes a huge difference. Using only priority queues or only maps would make certain operations too slow. Using both together gave us speed and memory efficiency.
 
-Team Member 2:
+Emiliano Espinoza:
 I learned that handling partial fills is trickier than it looks. You need to carefully update the remaining quantity, update the maps, and re-insert the order if it is not fully filled. Missing any of these steps can break the entire state of the engine.
