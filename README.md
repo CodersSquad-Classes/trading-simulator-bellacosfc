@@ -10,7 +10,35 @@ On this challenge, you're implementing a Continuos Limit Order Book (CLOB). Buye
 
 ## How to build and run
 
-_ADD YOUR INSTRUCTIONS HERE_
+How to build and run
+
+This project uses cmake to build. A C++ compiler that supports C++17 is needed.
+
+Clone the repository (or create the files):
+Make sure all the .h, .cpp, CMakeLists.txt, and markdown files are in the same directory.
+
+Create a build directory:
+
+mkdir build
+cd build
+
+
+Run cmake to configure the project:
+
+cmake ..
+
+
+Compile the project:
+
+make
+
+
+Run the executable:
+
+./clob_engine
+
+
+The terminal will clear and you will see the real-time order book dashboard. Press Ctrl+C to exit.
 
 
 ## Deliverables
