@@ -3,7 +3,7 @@
 #include "Order.h"
 #include <string>
 
-// ANSI Color Codes
+// ANSI Color Codes from chatgpt
 const std::string RESET = "\033[0m";
 const std::string BOLD = "\033[1m";
 const std::string RED = "\033[1;31m";
