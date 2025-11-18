@@ -6,6 +6,8 @@
 #include <string>
 #include <cstdint>
 
+using namespace std;
+
 enum class Side { BUY, SELL };
 
 struct Order {
@@ -14,15 +16,18 @@ struct Order {
     double price;
     int quantity;
     uint64_t timestamp;
+
+    Order(Side p_side, double p_price, int p_quantity)
+        : id(0), side(p_side), price(p_price), quantity(p_quantity), timestamp(0) {}
 };
 
 // Comparator for the BUY side (max-heap on price, min-heap on time)
 struct BuyOrderComparator {
     bool operator()(const Order& a, const Order& b) const {
         if (a.price != b.price) {
-            return a.price < b.price; // Higher price has higher priority
+            return a.price < b.price; 
         }
-        return a.timestamp > b.timestamp; // Earlier time has higher priority
+        return a.timestamp > b.timestamp;
     }
 };
 
@@ -30,9 +35,9 @@ struct BuyOrderComparator {
 struct SellOrderComparator {
     bool operator()(const Order& a, const Order& b) const {
         if (a.price != b.price) {
-            return a.price > b.price; // Lower price has higher priority
+            return a.price > b.price; 
         }
-        return a.timestamp > b.timestamp; // Earlier time has higher priority
+        return a.timestamp > b.timestamp;
     }
 };
 
@@ -40,7 +45,7 @@ class OrderBook {
 public:
     OrderBook() : nextOrderId(1) {}
 
-    /**
+    /** Reference from chatgpt:
      * @brief Adds a new order to the book, triggering matching logic.
      * @param order The new order to be added.
      */
@@ -50,7 +55,7 @@ public:
      * @brief Gets the aggregated buy-side price levels for display.
      * @return A const reference to the bidPriceLevels map.
      */
-    const std::map<double, int, std::greater<double>>& getBidLevels() const {
+    const map<double, int, greater<double>>& getBidLevels() const {
         return bidPriceLevels;
     }
 
@@ -58,33 +63,30 @@ public:
      * @brief Gets the aggregated sell-side price levels for display.
      * @return A const reference to the askPriceLevels map.
      */
-    const std::map<double, int, std::less<double>>& getAskLevels() const {
+    const map<double, int, less<double>>& getAskLevels() const {
         return askPriceLevels;
     }
 
     /**
-     * @brief Gets the log of recent trades.
-     * @return A const reference to the trade log.
+     * @brief 
+     * @return 
      */
-    const std::vector<std::string>& getTradeLog() const {
+    const vector<string>& getTradeLog() const {
         return tradeLog;
     }
 
 private:
-    // Priority queues for matching (price-time priority)
-    std::priority_queue<Order, std::vector<Order>, BuyOrderComparator> bids;
-    std::priority_queue<Order, std::vector<Order>, SellOrderComparator> asks;
+    priority_queue<Order, vector<Order>, BuyOrderComparator> bids;
+    priority_queue<Order, vector<Order>, SellOrderComparator> asks;
 
-    // Maps for aggregated display (price -> total quantity)
-    // std::greater sorts keys from high to low (bids)
-    std::map<double, int, std::greater<double>> bidPriceLevels;
-    // std::less (default) sorts keys from low to high (asks)
-    std::map<double, int, std::less<double>> askPriceLevels;
+    map<double, int, greater<double>> bidPriceLevels;
+    
+    map<double, int, less<double>> askPriceLevels;
 
-    std::vector<std::string> tradeLog; // Log of recent trades
-    static const size_t MAX_TRADE_LOG = 10; // Max trades to show
+    vector<string> tradeLog;
+    static const size_t MAX_TRADE_LOG = 10; 
 
-    uint64_t nextOrderId; // Counter for unique order IDs
+    uint64_t nextOrderId;
 
     /**
      * @brief Internal matching logic, called by addOrder.
