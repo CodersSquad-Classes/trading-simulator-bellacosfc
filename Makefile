@@ -1,58 +1,67 @@
-# ===============================================
-# Configuración del Proyecto
-# ===============================================
+# =======================================================
+# MAKEFILE - Stock Exchange Matching Engine (CLOB)
+# Compilación directa sin CMake
+# =======================================================
 
-# Nombre del ejecutable final
-TARGET = clob_engine
+# Directorios y nombres de archivos
+BUILD_DIR := build
+SRC_FILES := main.cpp orderBook.cpp dashboardImp.cpp
+HDR_FILES := Order.h dashboard.h utility.h orderdef.h
+OBJ_FILES := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(SRC_FILES))
+EXECUTABLE := $(BUILD_DIR)/clob_engine
 
-# Compilador C++
-CXX = g++
+# Compilador y Banderas
+CXX := g++
+CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic
+# Incluye el directorio actual (donde están los archivos .h)
+INC_FLAGS := -I.
 
-# Archivos fuente (.cpp)
-SOURCES = \
-	main.cpp \
-	OrderBook.cpp \
-	Dashboard.cpp
+# =======================================================
+# OBJETIVOS PRINCIPALES
+# =======================================================
 
-# Archivos objeto (.o) - generados automáticamente a partir de SOURCES
-OBJECTS = $(SOURCES:.cpp=.o)
+.PHONY: all run clean help
 
-# ===============================================
-# Banderas y Opciones de Compilación
-# ===============================================
+# El objetivo por defecto es 'all': construye el ejecutable.
+all: $(EXECUTABLE)
 
-# Estándar C++17 (-std=c++17)
-# Advertencias de compilación (-Wall -Wextra -Wpedantic)
-# Incluir directorio actual para headers (-I.)
-CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -I.
+# Objetivo 'run': construye (si es necesario) y ejecuta el programa.
+run: $(EXECUTABLE)
+	@echo "Ejecutando la aplicación. Presiona Ctrl+C para detenerla..."
+	@$(EXECUTABLE)
 
-# Banderas del linker: Necesarias para enlazar la biblioteca de hilos (Threads::Threads)
-LDFLAGS = -pthread
-
-# ===============================================
-# Reglas del Makefile
-# ===============================================
-
-# 1. Regla por defecto: Construir el ejecutable
-.PHONY: all
-all: $(TARGET)
-
-# Enlazar los archivos objeto para crear el ejecutable
-$(TARGET): $(OBJECTS)
-	@echo "Enlazando $^ para crear $@..."
-	$(CXX) $^ -o $@ $(LDFLAGS)
-
-# 2. Regla de Compilación (Regla de sufijo genérica)
-# Compila cualquier archivo .cpp a su archivo .o correspondiente.
-# $< es la dependencia (el archivo .cpp).
-# $@ es el destino (el archivo .o).
-%.o: %.cpp
-	@echo "Compilando $<..."
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-# 3. Regla de Limpieza
-# Elimina los archivos objeto (.o) y el ejecutable
-.PHONY: clean
+# Objetivo 'clean': elimina los archivos objeto y el ejecutable.
 clean:
 	@echo "Limpiando archivos de compilación..."
-	rm -f $(TARGET) $(OBJECTS)
+	@rm -rf $(BUILD_DIR)
+
+# =======================================================
+# REGLAS DE COMPILACIÓN
+# =======================================================
+
+# Regla para crear el directorio de construcción si no existe
+$(BUILD_DIR):
+	@mkdir -p $(BUILD_DIR)
+
+# Regla para enlazar: crear el ejecutable a partir de los archivos objeto
+$(EXECUTABLE): $(OBJ_FILES) | $(BUILD_DIR)
+	@echo "Enlazando..."
+	$(CXX) $(OBJ_FILES) -o $@
+
+# Regla para compilar archivos fuente (.cpp) a objetos (.o)
+# Depende de los archivos .h para la recompilación.
+$(BUILD_DIR)/%.o: %.cpp $(HDR_FILES) | $(BUILD_DIR)
+	@echo "Compilando $<..."
+	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -c $< -o $@
+
+# Mensaje de ayuda (igual que el anterior para referencia)
+help:
+	@echo "--------------------------------------------------------"
+	@echo "Makefile para Stock Exchange Matching Engine (CLOB)"
+	@echo "--------------------------------------------------------"
+	@echo "Comandos disponibles:"
+	@echo "  make all   : Compila todo el proyecto."
+	@echo "  make run   : Compila (si es necesario) y ejecuta el CLOB."
+	@echo "  make clean : Elimina el directorio de construcción ('build/')."
+	@echo "  make help  : Muestra este mensaje de ayuda."
+	@echo "--------------------------------------------------------"
